@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="none">
+  <rect width="512" height="512" rx="100" fill="#2563eb"/>
+  <rect x="100" y="80" width="312" height="352" rx="20" fill="#ffffff"/>
+  <!-- Corner markers -->
+  <rect x="120" y="100" width="28" height="28" fill="#0f172a" rx="4"/>
+  <rect x="364" y="100" width="28" height="28" fill="#0f172a" rx="4"/>
+  <rect x="120" y="384" width="28" height="28" fill="#0f172a" rx="4"/>
+  <rect x="364" y="384" width="28" height="28" fill="#0f172a" rx="4"/>
+  <!-- Bubbles rows -->
+  <circle cx="160" cy="180" r="10" fill="#2563eb"/>
+  <circle cx="200" cy="180" r="10" stroke="#94a3b8" stroke-width="3" fill="none"/>
+  <circle cx="240" cy="180" r="10" stroke="#94a3b8" stroke-width="3" fill="none"/>
+  <circle cx="280" cy="180" r="10" stroke="#94a3b8" stroke-width="3" fill="none"/>
+  <circle cx="160" cy="220" r="10" stroke="#94a3b8" stroke-width="3" fill="none"/>
+  <circle cx="200" cy="220" r="10" fill="#2563eb"/>
+  <circle cx="240" cy="220" r="10" stroke="#94a3b8" stroke-width="3" fill="none"/>
+  <circle cx="280" cy="220" r="10" stroke="#94a3b8" stroke-width="3" fill="none"/>
+  <circle cx="160" cy="260" r="10" stroke="#94a3b8" stroke-width="3" fill="none"/>
+  <circle cx="200" cy="260" r="10" stroke="#94a3b8" stroke-width="3" fill="none"/>
+  <circle cx="240" cy="260" r="10" fill="#2563eb"/>
+  <circle cx="280" cy="260" r="10" stroke="#94a3b8" stroke-width="3" fill="none"/>
+  <!-- Checkmark -->
+  <path d="M220 330 L250 360 L330 280" stroke="#16a34a" stroke-width="16" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
