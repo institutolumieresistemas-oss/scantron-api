@@ -2,43 +2,24 @@ package com.lumiere.scantron;
 
 import android.Manifest;
 import android.app.Activity;
-import android.app.AlertDialog;
-import android.app.DownloadManager;
-import android.content.Context;
-import android.content.DialogInterface;
-import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Environment;
-import android.view.View;
-import android.webkit.DownloadListener;
 import android.webkit.PermissionRequest;
-import android.webkit.URLUtil;
 import android.webkit.ValueCallback;
 import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.TextView;
+import android.content.Intent;
 import android.widget.Toast;
 
 public class MainActivity extends Activity {
 
     private WebView webView;
-    private TextView tvServerStatus;
-    private Button btnConfigServer;
-    private SharedPreferences prefs;
-
-    private static final String PREF_NAME = "ScantronPrefs";
-    private static final String KEY_SERVER_URL = "server_url";
     private static final int REQUEST_CODE_FILE_CHOOSER = 1001;
     private static final int REQUEST_CODE_PERMISSIONS = 1002;
-
     private ValueCallback<Uri[]> mFilePathCallback;
 
     @Override
@@ -46,23 +27,11 @@ public class MainActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        prefs = getSharedPreferences(PREF_NAME, MODE_PRIVATE);
-
         webView = findViewById(R.id.webView);
-        tvServerStatus = findViewById(R.id.tvServerStatus);
-        btnConfigServer = findViewById(R.id.btnConfigServer);
 
         setupWebView();
         requestAppPermissions();
-
-        btnConfigServer.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                showConfigDialog();
-            }
-        });
-
-        loadCurrentUrl();
+        loadLocalApp();
     }
 
     private void requestAppPermissions() {
@@ -84,16 +53,17 @@ public class MainActivity extends Activity {
         settings.setDatabaseEnabled(true);
         settings.setAllowFileAccess(true);
         settings.setAllowContentAccess(true);
+        settings.setAllowFileAccessFromFileURLs(true);
+        settings.setAllowUniversalAccessFromFileURLs(true);
         settings.setMediaPlaybackRequiresUserGesture(false);
         settings.setUseWideViewPort(true);
         settings.setLoadWithOverviewMode(true);
-        settings.setSupportZoom(true);
-        settings.setBuiltInZoomControls(false);
+        settings.setSupportZoom(false);
 
         webView.setWebViewClient(new WebViewClient() {
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, String url) {
-                if (url.startsWith("http://") || url.startsWith("https://") || url.startsWith("file://")) {
+                if (url.startsWith("file://") || url.startsWith("http://") || url.startsWith("https://")) {
                     view.loadUrl(url);
                     return true;
                 }
@@ -127,84 +97,17 @@ public class MainActivity extends Activity {
                     startActivityForResult(intent, REQUEST_CODE_FILE_CHOOSER);
                 } catch (Exception e) {
                     mFilePathCallback = null;
-                    Toast.makeText(MainActivity.this, "Error abriendo selector de cámara/archivos", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(MainActivity.this, "Error abriendo selector de archivos", Toast.LENGTH_SHORT).show();
                     return false;
                 }
                 return true;
             }
         });
-
-        // Handle PDF downloads
-        webView.setDownloadListener(new DownloadListener() {
-            @Override
-            public void onDownloadStart(String url, String userAgent, String contentDisposition, String mimetype, long contentLength) {
-                try {
-                    DownloadManager.Request request = new DownloadManager.Request(Uri.parse(url));
-                    request.setMimeType(mimetype);
-                    request.setDescription("Descargando plantilla de examen PDF...");
-                    String filename = URLUtil.guessFileName(url, contentDisposition, mimetype);
-                    request.setTitle(filename);
-                    request.allowScanningByMediaScanner();
-                    request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
-                    request.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, filename);
-
-                    DownloadManager dm = (DownloadManager) getSystemService(DOWNLOAD_SERVICE);
-                    dm.enqueue(request);
-                    Toast.makeText(MainActivity.this, "Descargando: " + filename, Toast.LENGTH_LONG).show();
-                } catch (Exception e) {
-                    // Fallback to external browser
-                    Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
-                    startActivity(intent);
-                }
-            }
-        });
     }
 
-    private void loadCurrentUrl() {
-        String savedUrl = prefs.getString(KEY_SERVER_URL, "");
-        if (savedUrl != null && !savedUrl.trim().isEmpty()) {
-            tvServerStatus.setText("Servidor: " + savedUrl);
-            webView.loadUrl(savedUrl);
-        } else {
-            tvServerStatus.setText("Modo Local (Configura URL de Railway)");
-            webView.loadUrl("file:///android_asset/www/index.html");
-        }
-    }
-
-    private void showConfigDialog() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("URL del Servidor Scantron");
-        builder.setMessage("Ingresa la URL de tu backend desplegado en Railway (ejemplo: https://mi-scantron.up.railway.app) o tu IP local.");
-
-        final EditText input = new EditText(this);
-        String currentUrl = prefs.getString(KEY_SERVER_URL, "");
-        input.setText(currentUrl);
-        input.setHint("https://tu-proyecto.up.railway.app");
-        builder.setView(input);
-
-        builder.setPositiveButton("Guardar y Conectar", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                String newUrl = input.getText().toString().trim();
-                if (!newUrl.isEmpty() && !newUrl.startsWith("http://") && !newUrl.startsWith("https://")) {
-                    newUrl = "https://" + newUrl;
-                }
-                prefs.edit().putString(KEY_SERVER_URL, newUrl).apply();
-                loadCurrentUrl();
-                Toast.makeText(MainActivity.this, "Servidor actualizado", Toast.LENGTH_SHORT).show();
-            }
-        });
-
-        builder.setNeutralButton("Usar Modo Local", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                prefs.edit().putString(KEY_SERVER_URL, "").apply();
-                loadCurrentUrl();
-            }
-        });
-
-        builder.setNegativeButton("Cancelar", null);
-        builder.show();
+    private void loadLocalApp() {
+        // Runs 100% locally from assets
+        webView.loadUrl("file:///android_asset/www/index.html");
     }
 
     @Override

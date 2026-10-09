@@ -1,4 +1,4 @@
-/* Custom styles for Scantron Mobile */
+/* Custom styles for Scantron Local */
 :root {
   --primary: #2563eb;
 }
@@ -7,6 +7,75 @@ body {
   touch-action: manipulation;
   -webkit-tap-highlight-color: transparent;
   user-select: none;
+}
+
+/* Safe Area & Bottom Navigation adjustments for mobile system bars */
+.mobile-bottom-nav {
+  padding-top: 10px;
+  padding-bottom: max(26px, calc(14px + env(safe-area-inset-bottom, 26px)));
+  background: rgba(15, 23, 42, 0.98);
+  border-top: 1px solid rgba(51, 65, 85, 0.8);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  box-shadow: 0 -10px 25px -5px rgba(0, 0, 0, 0.7);
+}
+
+.safe-page-container {
+  padding-bottom: max(135px, calc(105px + env(safe-area-inset-bottom, 35px)));
+}
+
+/* Swipe card item styles */
+.swipe-card-wrapper {
+  position: relative;
+  border-radius: 1rem;
+  overflow: hidden;
+  touch-action: pan-y;
+  user-select: none;
+  margin-bottom: 0.85rem;
+}
+
+.swipe-action-left {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to left, #e11d48, #be123c);
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding-right: 1.5rem;
+  color: white;
+  font-weight: 700;
+  font-size: 0.875rem;
+  border-radius: 1rem;
+  z-index: 1;
+}
+
+.swipe-action-right {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to right, #2563eb, #1d4ed8);
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  padding-left: 1.5rem;
+  color: white;
+  font-weight: 700;
+  font-size: 0.875rem;
+  border-radius: 1rem;
+  z-index: 1;
+}
+
+.swipe-card-content {
+  position: relative;
+  background: #0f172a;
+  border: 1px solid #1e293b;
+  border-radius: 1rem;
+  transition: transform 0.22s cubic-bezier(0.2, 0, 0, 1);
+  will-change: transform;
+  z-index: 2;
+}
+
+.swipe-card-content.swiping {
+  transition: none !important;
 }
 
 /* Reticle / Viewfinder overlay */
@@ -23,9 +92,9 @@ body {
   width: 82%;
   aspect-ratio: 3 / 4;
   border: 2px dashed rgba(255, 255, 255, 0.7);
-  border-radius: 12px;
+  border-radius: 14px;
   position: relative;
-  box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.55);
+  box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.6);
 }
 
 .scanner-frame::after {
@@ -36,7 +105,7 @@ body {
   right: 0;
   height: 2px;
   background: #3b82f6;
-  box-shadow: 0 0 8px #60a5fa;
+  box-shadow: 0 0 10px #60a5fa;
   animation: scanline 2.2s infinite ease-in-out;
 }
 
@@ -49,8 +118,8 @@ body {
 /* Corner targets */
 .corner-box {
   position: absolute;
-  width: 22px;
-  height: 22px;
+  width: 24px;
+  height: 24px;
   border-color: #60a5fa;
 }
 .corner-tl { top: -2px; left: -2px; border-top: 4px solid; border-left: 4px solid; }
@@ -58,13 +127,24 @@ body {
 .corner-bl { bottom: -2px; left: -2px; border-bottom: 4px solid; border-left: 4px solid; }
 .corner-br { bottom: -2px; right: -2px; border-bottom: 4px solid; border-right: 4px solid; }
 
-/* Pulse animation */
-@keyframes pulse-ring {
-  0% { transform: scale(0.95); opacity: 0.8; }
-  50% { transform: scale(1.05); opacity: 0.4; }
-  100% { transform: scale(0.95); opacity: 0.8; }
+/* Shutter flash animation */
+.shutter-flash {
+  animation: flash-anim 0.25s ease-out forwards;
 }
 
-.pulse-target {
-  animation: pulse-ring 2s infinite ease-in-out;
+@keyframes flash-anim {
+  0% { opacity: 0.95; background-color: white; }
+  100% { opacity: 0; background-color: transparent; }
+}
+
+/* Countdown popup animation */
+.countdown-number {
+  animation: countdown-pop 0.9s ease-out infinite;
+}
+
+@keyframes countdown-pop {
+  0% { transform: scale(0.5); opacity: 0; }
+  35% { transform: scale(1.2); opacity: 1; }
+  75% { transform: scale(1.0); opacity: 1; }
+  100% { transform: scale(0.9); opacity: 0.8; }
 }

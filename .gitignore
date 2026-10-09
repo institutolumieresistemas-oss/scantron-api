@@ -27,3 +27,10 @@ scantron.db
 *.sqlite3
 .DS_Store
 Thumbs.db
+*.class
+android_app/obj/
+android_app/gen/
+android_app/compiled_res.zip
+android_app/base.apk
+android_app/aligned.apk
+android_app/classes.dex
