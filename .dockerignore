@@ -1,0 +1,13 @@
+.git
+.github
+android_app
+build_apk.ps1
+README.md
+scantron.db
+*.sqlite3
+__pycache__
+*.py[cod]
+.env
+.venv
+venv
+ENV

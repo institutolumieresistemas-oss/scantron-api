@@ -33,11 +33,11 @@ window.app = {
   // ================= API CONFIG & HEALTH =================
   getApiUrl() {
     let url = localStorage.getItem(this.KEY_API_URL);
-    if (!url || !url.trim()) {
-      if (window.location.protocol.startsWith('http')) {
+    if (!url || !url.trim() || url.includes('localhost:8000')) {
+      if (window.location.protocol.startsWith('http') && !window.location.origin.includes('localhost:8000')) {
         return window.location.origin;
       }
-      return 'http://localhost:8000';
+      return 'https://scantron-api-production.up.railway.app';
     }
     return url.trim().replace(/\/+$/, '');
   },
@@ -85,7 +85,7 @@ window.app = {
 
     if (btnOpen) {
       btnOpen.addEventListener('click', () => {
-        const current = localStorage.getItem(this.KEY_API_URL) || '';
+        const current = localStorage.getItem(this.KEY_API_URL) || this.getApiUrl();
         if (inputUrl) inputUrl.value = current;
         if (feedback) feedback.classList.add('hidden');
         if (modal) modal.classList.remove('hidden');
@@ -98,7 +98,7 @@ window.app = {
 
     if (btnTest && inputUrl && feedback) {
       btnTest.addEventListener('click', async () => {
-        const testUrl = (inputUrl.value.trim() || window.location.origin).replace(/\/+$/, '');
+        const testUrl = (inputUrl.value.trim() || this.getApiUrl()).replace(/\/+$/, '');
         feedback.className = "text-xs p-2.5 rounded-xl border bg-blue-950/60 border-blue-800 text-blue-300 block";
         feedback.textContent = "Probando conexión con " + testUrl + "...";
         try {
